@@ -48,18 +48,11 @@ public class Repeating extends AbstractFieldContainer<Repeating> implements Fiel
       for ( JsonNode jsonNode : node ) {
         final RepeatingRow row = new RepeatingRow ( parent, this, i++ );
         section.add ( row );
-        jsonNode.fields ().forEachRemaining ( cur -> {
-          Field f = this.getField ( cur.getKey () );
-          if ( f != null ) {
-            final DataField field = f.parseJSON ( cur.getValue (), row );
-            if ( field != null ) {
-              row.addField ( cur.getKey (), field );
-            }
-          }
-        } );
+        jsonToFields ( jsonNode, row );
       }
     }
 
     return section;
   }
+
 }

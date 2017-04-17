@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.dforms.data.DataField;
 import org.dforms.data.FormData;
 import org.dforms.fields.Field;
 
@@ -48,17 +47,7 @@ public class Form implements FieldContainer {
 
   public FormData parseJSON ( JsonNode node ) {
     final FormData data = new FormData ( this );
-
-    node.fields ().forEachRemaining ( cur -> {
-      Field f = this.getField ( cur.getKey () );
-      if ( f != null ) {
-        final DataField field = f.parseJSON ( cur.getValue (), data );
-        if ( field != null ) {
-          data.addField ( cur.getKey (), field );
-        }
-      }
-    } );
-
+    jsonToFields ( node, data );
     return data;
   }
 

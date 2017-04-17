@@ -39,21 +39,25 @@ public class FormTest {
   @Test
   public void buildTest () throws Exception {
     Form form = new Form ();
+    form.addSection ( "summary2", new Section () ).getLabel ();
+    assertEquals ( "summary2", form.getSection ( "summary2" ).getName () );
+    assertJsonEquals ( "{\n" +
+        "  \"$schema\": \"http://dforms.org/v1#\",\n" +
+        "  \"sections\": {\n" +
+        "    \"summary2\": {\n" +
+        "      \"label\": null\n" +
+        "    }\n" +
+        "  }\n" +
+        "}", mapper.writeValueAsString ( form ) );
+    form.getSection ( "summary2" ).addTextField ( "name" );
     form.addSection ( "summary", new Section () );
-    assertEquals ( "summary", form.getSection ( "summary" ).getName () );
     assertJsonEquals ( "{\n" +
         "  \"$schema\": \"http://dforms.org/v1#\",\n" +
         "  \"sections\": {\n" +
         "    \"summary\": {\n" +
         "      \"label\": null\n" +
-        "    }\n" +
-        "  }\n" +
-        "}", mapper.writeValueAsString ( form ) );
-    form.getSection ( "summary" ).addTextField ( "name" );
-    assertJsonEquals ( "{\n" +
-        "  \"$schema\": \"http://dforms.org/v1#\",\n" +
-        "  \"sections\": {\n" +
-        "    \"summary\": {\n" +
+        "    },\n" +
+        "    \"summary2\": {\n" +
         "      \"label\": null,\n" +
         "      \"fields\": {\n" +
         "        \"name\": {\n" +
@@ -74,6 +78,7 @@ public class FormTest {
     assertThat ( formData.getFields ().values (), hasSize ( 18 ) );
     assertEquals ( "123", formData.getField ( "volume" ).getValue () );
     assertNull ( formData.getField ( "lot" ).getValue () );
+    //noinspection ConstantConditions
     assertJsonEquals ( FileUtils.readFileToString ( FileUtils.toFile ( getClass ().getResource ( "/exampleDataInvalid.json" ) ) ),
         mapper.writeValueAsString ( formData ) );
     ValidationContext validate = formData.validate ();
