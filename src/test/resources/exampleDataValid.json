@@ -1,0 +1,25 @@
+{
+  "pt_jr_id": "1",
+  "ptt_id": null,
+  "lot": null,
+  "plan_no": null,
+  "volume": null,
+  "further_detail": null,
+  "ppt_restriction": null,
+  "ppt_dimensions": null,
+  "ppt_area": null,
+  "ppt_area_type": "m2",
+  "ppt_zone": null,
+  "ppt_zone_effect": null,
+  "building_type": null,
+  "currentuse": "1",
+  "propdet_year_built_circa": null,
+  "propdet_year_built": null,
+  "propdet_value_rent_actual": null,
+  "additions": [
+    {
+      "propdet_year_built_additions": null,
+      "additions": null
+    }
+  ]
+}
