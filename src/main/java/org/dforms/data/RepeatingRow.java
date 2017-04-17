@@ -11,6 +11,16 @@ public class RepeatingRow extends AbstractDataFieldContainer {
   }
 
   @Override
+  public String getName () {
+    return null;
+  }
+
+  @Override
+  public void setName ( String name ) {
+
+  }
+
+  @Override
   public String getPath () {
     return String.format ( "%s%d/", super.getPath (), rowNum );
   }

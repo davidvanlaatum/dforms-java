@@ -19,6 +19,11 @@ public class FormData extends AbstractDataFieldContainer {
   }
 
   @Override
+  public void setName ( String name ) {
+
+  }
+
+  @Override
   public String getPath () {
     return "/";
   }

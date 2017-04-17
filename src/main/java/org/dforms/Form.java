@@ -3,8 +3,8 @@ package org.dforms;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.dforms.data.DataFieldContainer;
 import org.dforms.data.FormData;
 import org.dforms.fields.Field;
 
@@ -45,12 +45,6 @@ public class Form implements FieldContainer {
     return this;
   }
 
-  public FormData parseJSON ( JsonNode node ) {
-    final FormData data = new FormData ( this );
-    jsonToFields ( node, data );
-    return data;
-  }
-
   public Form addSection ( String name, Section section ) {
     if ( sections.containsKey ( name ) ) {
       throw new IllegalArgumentException ( "Section " + name + " already exists" );
@@ -75,8 +69,13 @@ public class Form implements FieldContainer {
   }
 
   @Override
+  @JsonIgnore
   public LinkedHashMap<String, Field> getFields () {
-    return null;
+    LinkedHashMap<String, Field> rt = new LinkedHashMap<> ();
+    for ( Section section : sections.values () ) {
+      rt.putAll ( section.getFields () );
+    }
+    return rt;
   }
 
   public Field getField ( String name ) {
@@ -116,6 +115,20 @@ public class Form implements FieldContainer {
   public String getLabelPath () {
     return null;
   }
+
+  @Override
+  public void buildNewDataStructure ( DataFieldContainer container ) {
+    for ( Section section : sections.values () ) {
+      section.buildNewDataStructure ( container );
+    }
+  }
+
+  public FormData buildNewDataStructure () {
+    FormData rt = new FormData ( this );
+    this.buildNewDataStructure ( rt );
+    return rt;
+  }
+
 
   public static class SectionDeserializer extends NamedFieldDeserializer<Section> {
     protected SectionDeserializer () {

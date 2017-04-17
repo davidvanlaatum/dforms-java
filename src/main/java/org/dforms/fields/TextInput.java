@@ -1,7 +1,5 @@
 package org.dforms.fields;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.dforms.data.DataField;
 import org.dforms.data.DataFieldContainer;
 import org.dforms.data.TextField;
 
@@ -27,7 +25,7 @@ public class TextInput extends Input {
   }
 
   @Override
-  public DataField parseJSON ( JsonNode node, DataFieldContainer parent ) {
-    return new TextField ( node.isNull () ? null : node.asText (), this, parent );
+  public void buildNewDataStructure ( DataFieldContainer container ) {
+    container.addField ( getName (), new TextField ( null, this, container ) );
   }
 }

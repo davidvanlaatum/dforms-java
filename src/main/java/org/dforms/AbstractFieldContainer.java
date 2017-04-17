@@ -1,6 +1,5 @@
 package org.dforms;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.dforms.fields.Field;
@@ -19,7 +18,6 @@ public abstract class AbstractFieldContainer<T extends AbstractFieldContainer> i
     return parent;
   }
 
-  @JsonBackReference
   public void setParent ( FieldContainer parent ) {
     this.parent = parent;
   }
@@ -49,6 +47,7 @@ public abstract class AbstractFieldContainer<T extends AbstractFieldContainer> i
     return label;
   }
 
+  @SuppressWarnings ( "unchecked" )
   public T setLabel ( String label ) {
     this.label = label;
     return (T) this;
@@ -59,13 +58,12 @@ public abstract class AbstractFieldContainer<T extends AbstractFieldContainer> i
     return fields;
   }
 
+  @SuppressWarnings ( "unchecked" )
   @JsonDeserialize ( using = FieldDeserializer.class )
   public T setFields ( LinkedHashMap<String, Field> fields ) {
     this.fields = fields;
     if ( fields != null ) {
-      fields.values ().forEach ( field -> {
-        field.setParent ( this );
-      } );
+      fields.values ().forEach ( field -> field.setParent ( this ) );
     }
     return (T) this;
   }

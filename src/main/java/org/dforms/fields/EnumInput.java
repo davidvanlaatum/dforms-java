@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.dforms.data.DataField;
 import org.dforms.data.DataFieldContainer;
 import org.dforms.data.EnumField;
 
@@ -31,16 +30,7 @@ public class EnumInput extends Input {
     return options != null ? options : optionsList;
   }
 
-  public EnumInput setOptions ( LinkedHashMap<String, String> options ) {
-    this.options = options;
-    return this;
-  }
-
-  public EnumInput setOptions ( List<String> optionsList ) {
-    this.optionsList = optionsList;
-    return this;
-  }
-
+  @SuppressWarnings ( "unchecked" )
   @JsonProperty
   public EnumInput setOptions ( JsonNode node ) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper ();
@@ -52,8 +42,18 @@ public class EnumInput extends Input {
     return this;
   }
 
+  public EnumInput setOptions ( LinkedHashMap<String, String> options ) {
+    this.options = options;
+    return this;
+  }
+
+  public EnumInput setOptions ( List<String> optionsList ) {
+    this.optionsList = optionsList;
+    return this;
+  }
+
   @Override
-  public DataField parseJSON ( JsonNode node, DataFieldContainer parent ) {
-    return new EnumField ( node.isNull () ? null : node.asText (), this, parent );
+  public void buildNewDataStructure ( DataFieldContainer container ) {
+    container.addField ( getName (), new EnumField ( null, this, container ) );
   }
 }

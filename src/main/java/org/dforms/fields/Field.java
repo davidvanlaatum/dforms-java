@@ -1,13 +1,12 @@
 package org.dforms.fields;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.dforms.DataStructureBuilder;
 import org.dforms.FieldContainer;
 import org.dforms.NamedObject;
-import org.dforms.data.DataField;
-import org.dforms.data.DataFieldContainer;
 
 @JsonTypeInfo ( property = "type", use = JsonTypeInfo.Id.NAME )
 @JsonSubTypes ( {
@@ -21,10 +20,8 @@ import org.dforms.data.DataFieldContainer;
     @JsonSubTypes.Type ( value = Repeating.class, name = "repeating" ),
 } )
 @JsonInclude ( JsonInclude.Include.NON_EMPTY )
-public interface Field extends NamedObject {
+public interface Field extends NamedObject, DataStructureBuilder {
+  @JsonIgnore
   FieldContainer getParent ();
-
   void setParent ( FieldContainer parent );
-
-  DataField parseJSON ( JsonNode node, DataFieldContainer parent );
 }

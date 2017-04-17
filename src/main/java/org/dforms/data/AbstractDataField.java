@@ -10,8 +10,7 @@ public abstract class AbstractDataField<T, F extends Input> implements DataField
   protected DataFieldContainer parent;
   private T value;
 
-  public AbstractDataField ( T value, F field, DataFieldContainer parent ) {
-    this.value = value;
+  public AbstractDataField ( F field, DataFieldContainer parent ) {
     this.field = field;
     this.parent = parent;
   }
@@ -28,6 +27,11 @@ public abstract class AbstractDataField<T, F extends Input> implements DataField
   @JsonValue
   public T getValue () {
     return value;
+  }
+
+  @Override
+  public void setValue ( T value ) {
+    this.value = value;
   }
 
   @Override

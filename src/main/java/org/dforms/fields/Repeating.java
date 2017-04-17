@@ -1,8 +1,6 @@
 package org.dforms.fields;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.dforms.AbstractFieldContainer;
-import org.dforms.data.DataField;
 import org.dforms.data.DataFieldContainer;
 import org.dforms.data.RepeatingRow;
 import org.dforms.data.RepeatingSection;
@@ -40,19 +38,13 @@ public class Repeating extends AbstractFieldContainer<Repeating> implements Fiel
   }
 
   @Override
-  public DataField parseJSON ( JsonNode node, DataFieldContainer parent ) {
-    RepeatingSection section = new RepeatingSection ( this );
-
-    if ( node.isArray () ) {
-      int i = 0;
-      for ( JsonNode jsonNode : node ) {
-        final RepeatingRow row = new RepeatingRow ( parent, this, i++ );
-        section.add ( row );
-        jsonToFields ( jsonNode, row );
+  public void buildNewDataStructure ( DataFieldContainer container ) {
+    if ( container instanceof RepeatingRow ) {
+      for ( Field field : getFields ().values () ) {
+        field.buildNewDataStructure ( container );
       }
+    } else {
+      container.addField ( getName (), new RepeatingSection ( this, container ) );
     }
-
-    return section;
   }
-
 }

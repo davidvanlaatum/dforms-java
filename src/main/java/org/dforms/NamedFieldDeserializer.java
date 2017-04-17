@@ -13,10 +13,6 @@ public class NamedFieldDeserializer<T> extends StdDeserializer<LinkedHashMap<Str
     super ( vc );
   }
 
-  protected NamedFieldDeserializer ( StdDeserializer<?> src ) {
-    super ( src );
-  }
-
   @Override
   public LinkedHashMap<String, T> deserialize ( JsonParser p, DeserializationContext ctxt ) throws IOException {
     LinkedHashMap<String, T> map = new LinkedHashMap<> ();

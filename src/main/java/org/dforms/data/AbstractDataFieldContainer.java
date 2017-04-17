@@ -2,11 +2,12 @@ package org.dforms.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.dforms.FieldContainer;
 
 import java.util.LinkedHashMap;
 
-public class AbstractDataFieldContainer implements DataFieldContainer, DataField {
+public abstract class AbstractDataFieldContainer implements DataFieldContainer {
   private final FieldContainer fieldContainer;
   private LinkedHashMap<String, DataField> fields = new LinkedHashMap<> ();
   private DataFieldContainer parent;
@@ -46,20 +47,9 @@ public class AbstractDataFieldContainer implements DataFieldContainer, DataField
     }
   }
 
-  @Override
   @JsonIgnore
   public Object getValue () {
     return getFields ();
-  }
-
-  @Override
-  public String getName () {
-    return fieldContainer.getName ();
-  }
-
-  @Override
-  public void setName ( String name ) {
-
   }
 
   @Override
@@ -74,5 +64,13 @@ public class AbstractDataFieldContainer implements DataFieldContainer, DataField
   @Override
   public FieldContainer getFieldContainer () {
     return fieldContainer;
+  }
+
+  @Override
+  public void parseJSON ( JsonNode node ) {
+    node.fields ().forEachRemaining ( entry -> {
+      final DataField field = getField ( entry.getKey () );
+      field.parseJSON ( entry.getValue () );
+    } );
   }
 }

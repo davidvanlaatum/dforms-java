@@ -4,11 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.FileUtils;
 import org.dforms.data.FormData;
+import org.dforms.data.RepeatingRow;
+import org.dforms.data.RepeatingSection;
+import org.dforms.data.TextField;
 import org.dforms.data.ValidationContext;
 import org.junit.Before;
 import org.junit.Test;
 
 import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
+import static net.javacrumbs.jsonunit.JsonAssert.when;
+import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -73,14 +78,16 @@ public class FormTest {
   @Test
   public void parseDataInvalid () throws Exception {
     final Form form = mapper.readValue ( getClass ().getResource ( "/example.json" ), Form.class );
-    FormData formData = form.parseJSON ( mapper.readTree ( getClass ().getResource ( "/exampleDataInvalid.json" ) ) );
+    final FormData formData = form.buildNewDataStructure ();
     assertNotNull ( formData.getFields () );
-    assertThat ( formData.getFields ().values (), hasSize ( 18 ) );
+    assertThat ( formData.getFields ().values (), hasSize ( 20 ) );
+    assertNull ( formData.getField ( "volume" ).getValue () );
+    formData.parseJSON ( mapper.readTree ( getClass ().getResource ( "/exampleDataInvalid.json" ) ) );
     assertEquals ( "123", formData.getField ( "volume" ).getValue () );
     assertNull ( formData.getField ( "lot" ).getValue () );
     //noinspection ConstantConditions
     assertJsonEquals ( FileUtils.readFileToString ( FileUtils.toFile ( getClass ().getResource ( "/exampleDataInvalid.json" ) ) ),
-        mapper.writeValueAsString ( formData ) );
+        mapper.writeValueAsString ( formData ), when ( IGNORING_EXTRA_FIELDS ) );
     ValidationContext validate = formData.validate ();
     assertFalse ( validate.isValid () );
     assertEquals ( "Summary/currentuse: is not valid", validate.toString () );
@@ -89,13 +96,29 @@ public class FormTest {
   @Test
   public void parseDataValid () throws Exception {
     final Form form = mapper.readValue ( getClass ().getResource ( "/example.json" ), Form.class );
-    FormData formData = form.parseJSON ( mapper.readTree ( getClass ().getResource ( "/exampleDataValid.json" ) ) );
+    final FormData formData = form.buildNewDataStructure ();
     assertNotNull ( formData.getFields () );
-    assertThat ( formData.getFields ().values (), hasSize ( 18 ) );
+    assertThat ( formData.getFields ().values (), hasSize ( 20 ) );
+    formData.parseJSON ( mapper.readTree ( getClass ().getResource ( "/exampleDataValid.json" ) ) );
     assertJsonEquals ( FileUtils.readFileToString ( FileUtils.toFile ( getClass ().getResource ( "/exampleDataValid.json" ) ) ),
-        mapper.writeValueAsString ( formData ) );
+        mapper.writeValueAsString ( formData ), when ( IGNORING_EXTRA_FIELDS ) );
     ValidationContext validate = formData.validate ();
     assertTrue ( validate.toString (), validate.isValid () );
     assertEquals ( "", validate.toString () );
+  }
+
+  @Test
+  public void buildData () throws Exception {
+    final Form form = mapper.readValue ( getClass ().getResource ( "/example.json" ), Form.class );
+    final FormData formData = form.buildNewDataStructure ();
+    final RepeatingRow additions = formData.getField ( "additions", RepeatingSection.class ).addRow ();
+    additions.getField ( "additions", TextField.class ).setValue ( "Hi all" );
+    assertJsonEquals ( "{\n" +
+        "  \"additions\": [\n" +
+        "    {\n" +
+        "      \"additions\": \"Hi all\"\n" +
+        "    }\n" +
+        "  ]\n" +
+        "}", mapper.writeValueAsString ( formData ), when ( IGNORING_EXTRA_FIELDS ) );
   }
 }

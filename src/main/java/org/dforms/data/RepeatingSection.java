@@ -1,14 +1,17 @@
 package org.dforms.data;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.dforms.fields.Repeating;
 
 import java.util.ArrayList;
 
-public class RepeatingSection extends ArrayList<RepeatingRow> implements DataField<RepeatingSection> {
+public class RepeatingSection extends ArrayList<RepeatingRow> implements DataField<Object> {
   private final Repeating repeating;
+  private final DataFieldContainer container;
 
-  public RepeatingSection ( Repeating repeating ) {
+  public RepeatingSection ( Repeating repeating, DataFieldContainer container ) {
     this.repeating = repeating;
+    this.container = container;
   }
 
   @Override
@@ -19,8 +22,28 @@ public class RepeatingSection extends ArrayList<RepeatingRow> implements DataFie
   }
 
   @Override
-  public RepeatingSection getValue () {
-    return this;
+  public Object getValue () {
+    return null;
+  }
+
+  @Override
+  public void setValue ( Object value ) {
+
+  }
+
+  @Override
+  public void parseJSON ( JsonNode node ) {
+    clear ();
+    for ( JsonNode jsonNode : node ) {
+      addRow ().parseJSON ( jsonNode );
+    }
+  }
+
+  public RepeatingRow addRow () {
+    RepeatingRow rt = new RepeatingRow ( container, repeating, size () );
+    repeating.buildNewDataStructure ( rt );
+    add ( rt );
+    return rt;
   }
 
   @Override
