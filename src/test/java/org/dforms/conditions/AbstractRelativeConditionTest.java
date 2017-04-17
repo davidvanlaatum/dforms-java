@@ -70,14 +70,6 @@ public class AbstractRelativeConditionTest {
       fail ( "Should not get here" );
       return true;
     } ) );
-
-// todo
-//    assertTrue ( obj.areNumbers ( "1", "2", ( first, second, common ) -> {
-//      assertEquals ( 1, first );
-//      assertEquals ( 2, second );
-//      assertEquals ( Integer.class, common );
-//      return true;
-//    } ) );
   }
 
   class TestObject extends AbstractRelativeCondition {
